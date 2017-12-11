@@ -37,8 +37,8 @@ void GeniviRequest::CreateDBusSession( )
 }
 
 /**
- *  @brief	  Check connection status
- *  @return	 Connection status
+ *  @brief      Check connection status
+ *  @return     Presence / absence of connection
  */
 bool GeniviRequest::CheckSession()
 {
@@ -49,11 +49,11 @@ bool GeniviRequest::CheckSession()
 
 	try
 	{
-		// get connection status
+		// Get connection status
 		DBus::Connection conn = ((Navicore*)navicore_)->conn();
 		bool isConnect = conn.connected();
 
-		// When it is not connected
+		// If it is not connected, it issues an error
 		if(!isConnect)
 		{
 			fprintf(stderr, "Service has no session.\n");
@@ -69,9 +69,9 @@ bool GeniviRequest::CheckSession()
 }
 
 /**
- *  @brief	  GeniviAPI GetPositionを呼び出し、情報を取得する
- *  @param[in]  valuesToReturn Key array of information to retrieve using API
- *  @return	 Geniviから取得した情報のキーと値のmap情報
+ *  @brief      Call GeniviAPI GetPosition to get information
+ *  @param[in]  valuesToReturn Key arrangement of information acquired from Genivi
+ *  @return     Map information on key and value of information acquired from Genivi
  */
 std::map< int32_t, double > GeniviRequest::NavicoreGetPosition( const std::vector< int32_t >& valuesToReturn )
 {
@@ -86,7 +86,7 @@ std::map< int32_t, double > GeniviRequest::NavicoreGetPosition( const std::vecto
 	{
 		std::map< int32_t, ::DBus::Struct< uint8_t, ::DBus::Variant > >::iterator it;
 		std::map< int32_t, ::DBus::Struct< uint8_t, ::DBus::Variant > > PosList =
-			((Navicore*)navicore_)->GetPosition(valuesToReturn);
+		    ((Navicore*)navicore_)->GetPosition(valuesToReturn);
 		for (it = PosList.begin(); it != PosList.end(); it++)
 		{
 			if (it->first == NAVICORE_LATITUDE || it->second._1 == NAVICORE_LATITUDE)
@@ -101,7 +101,7 @@ std::map< int32_t, double > GeniviRequest::NavicoreGetPosition( const std::vecto
 			{
 				ret[it->first] = it->second._2.reader().get_uint32();
 			}
-	#if 0 // 未サポート
+#if 0 // no supported
 			else if (it->first == NAVICORE_TIMESTAMP || it->second._1 == NAVICORE_TIMESTAMP)
 			{
 				ret[it->first] = it->second._2.reader().get_uint32();
@@ -110,7 +110,7 @@ std::map< int32_t, double > GeniviRequest::NavicoreGetPosition( const std::vecto
 			{
 				ret[it->first] = it->second._2.reader().get_int32();
 			}
-	#endif
+#endif
 			else if (it->first == NAVICORE_SIMULATION_MODE || it->second._1 == NAVICORE_SIMULATION_MODE)
 			{
 				ret[it->first] = it->second._2.reader().get_bool();
@@ -125,11 +125,9 @@ std::map< int32_t, double > GeniviRequest::NavicoreGetPosition( const std::vecto
 	return ret;
 }
 
-
 /**
- *  @brief  GeniviAPI GetPositionを呼び出し、情報を取得する
- *  @param  なし
- *  @return Geniviから取得したルートハンドル
+ *  @brief  Call GeniviAPI GetPosition to get information
+ *  @return Route handle acquired from Genivi
  */
 std::vector< uint32_t > GeniviRequest::NavicoreGetAllRoutes( void )
 {
@@ -154,9 +152,9 @@ std::vector< uint32_t > GeniviRequest::NavicoreGetAllRoutes( void )
 
 
 /**
- *  @brief	  GeniviAPI GetPositionを呼び出し、情報を取得する
- *  @param[in]  sessionHandle セッションハンドル
- *  @return	 Geniviから取得したルートハンドル
+ *  @brief      Call GeniviAPI GetPosition to get information
+ *  @param[in]  sessionHandle Session handle
+ *  @return     Route handle acquired from Genivi
  */
 uint32_t GeniviRequest::NavicoreCreateRoute( const uint32_t& sessionHandle )
 {
@@ -178,11 +176,9 @@ uint32_t GeniviRequest::NavicoreCreateRoute( const uint32_t& sessionHandle )
 	return routeHandle;
 }
 
-
 /**
- *  @brief	  GeniviAPI PauseSimulationを呼び出す
- *  @param[in]  sessionHandle セッションハンドル
- *  @return	 なし
+ *  @brief      Call GeniviAPI PauseSimulation
+ *  @param[in]  sessionHandle Session handle
  */
 void GeniviRequest::NavicorePauseSimulation( const uint32_t& sessionHandle )
 {
@@ -203,10 +199,9 @@ void GeniviRequest::NavicorePauseSimulation( const uint32_t& sessionHandle )
 
 
 /**
- *  @brief	  GeniviAPI SetSimulationModeを呼び出す
- *  @param[in]  sessionHandle セッションハンドル
- *  @param[in]  activate シミュレーションモード有効・無効
- *  @return	 なし
+ *  @brief      Call GeniviAPI SetSimulationMode
+ *  @param[in]  sessionHandle Session handle
+ *  @param[in]  activate Simulation mode enabled / disabled
  */
 void GeniviRequest::NavicoreSetSimulationMode( const uint32_t& sessionHandle, const bool& activate )
 {
@@ -227,14 +222,14 @@ void GeniviRequest::NavicoreSetSimulationMode( const uint32_t& sessionHandle, co
 
 
 /**
- *  @brief	  GeniviAPI SetSimulationModeを呼び出す
- *  @param[in]  routeHandle	 ルートハンドル
- *  @return	 なし
+ *  @brief      Call GeniviAPI SetSimulationMode
+ *  @param[in]  sessionHandle Session handle
+ *  @param[in]  routeHandle Route handle
  */
 void GeniviRequest::NavicoreCancelRouteCalculation( const uint32_t& sessionHandle, const uint32_t& routeHandle )
 {
 	if( !CheckSession() )
-	{
+	{ 
 		return;
 	}
 
@@ -248,17 +243,15 @@ void GeniviRequest::NavicoreCancelRouteCalculation( const uint32_t& sessionHandl
 	}
 }
 
-
 /**
- *  @brief	  GeniviAPI SetWaypointsを呼び出す
- *  @param[in]  sessionHandle セッションハンドル
- *  @param[in]  routeHandle ルートハンドル
- *  @param[in]  startFromCurrentPosition 自車位置からルートを引くか否か
- *  @param[in]  waypointsList 目的地座標
- *  @return	 なし
+ *  @brief      Call GeniviAPI SetWaypoints
+ *  @param[in]  sessionHandle Session handle
+ *  @param[in]  routeHandle Route handle
+ *  @param[in]  startFromCurrentPosition Whether or not to draw a route from the position of the vehicle
+ *  @param[in]  waypointsList Destination coordinates
  */
 void GeniviRequest::NavicoreSetWaypoints( const uint32_t& sessionHandle, const uint32_t& routeHandle,
-					const bool& startFromCurrentPosition, const std::vector<Waypoint>& waypointsList )
+                    const bool& startFromCurrentPosition, const std::vector<Waypoint>& waypointsList )
 {
 	if( !CheckSession() )
 	{
@@ -269,7 +262,7 @@ void GeniviRequest::NavicoreSetWaypoints( const uint32_t& sessionHandle, const u
 	std::vector< std::map< int32_t, ::DBus::Struct< uint8_t, ::DBus::Variant > > > wpl;
 
 	fprintf(stdout, "session: %d, route: %d, startFromCurrentPosition: %d\n",
-		sessionHandle, routeHandle, startFromCurrentPosition);
+	    sessionHandle, routeHandle, startFromCurrentPosition);
 
 	for (it = waypointsList.begin(); it != waypointsList.end(); it++)
 	{
@@ -300,12 +293,10 @@ void GeniviRequest::NavicoreSetWaypoints( const uint32_t& sessionHandle, const u
 	}
 }
 
-
 /**
- *  @brief	  GeniviAPI CalculateRouteを呼び出す
- *  @param[in]  sessionHandle セッションハンドル
- *  @param[in]  routeHandle ルートハンドル
- *  @return	 なし
+ *  @brief      Call GeniviAPI CalculateRoute
+ *  @param[in]  sessionHandle Session handle
+ *  @param[in]  routeHandle Route handle
  */
 void GeniviRequest::NavicoreCalculateRoute( const uint32_t& sessionHandle, const uint32_t& routeHandle )
 {
@@ -326,9 +317,8 @@ void GeniviRequest::NavicoreCalculateRoute( const uint32_t& sessionHandle, const
 
 
 /**
- *  @brief  GeniviAPI CalculateRouteを呼び出す
- *  @param  なし
- *  @return Geniviから取得した情報のキーと値のmap情報
+ *  @brief  Call GeniviAPI CalculateRoute
+ *  @return Map information on key and value of information acquired from Genivi
  */
 std::map<uint32_t, std::string> GeniviRequest::NavicoreGetAllSessions()
 {

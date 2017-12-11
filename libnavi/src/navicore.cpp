@@ -1,7 +1,5 @@
 // Copyright 2017 AISIN AW CO.,LTD
 
-#include <string>
-
 #include "libnavicore.hpp"
 #include "BinderClient.h"
 

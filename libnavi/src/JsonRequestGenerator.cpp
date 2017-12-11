@@ -6,9 +6,9 @@
 #include "JsonRequestGenerator.h"
 
 /**
- *  @brief navicore_getpositionのリクエスト生成
- *  @param valuesToReturn 取得したいキー情報
- *  @return json文字列
+ *  @brief Generate request for navicore_getposition
+ *  @param valuesToReturn Key information you want to obtain
+ *  @return json string
  */
 std::string JsonRequestGenerator::CreateRequestGetPosition(const std::vector< int32_t >& valuesToReturn)
 {
@@ -24,17 +24,17 @@ std::string JsonRequestGenerator::CreateRequestGetPosition(const std::vector< in
 
 	json_object_object_add(request_json, "valuesToReturn", json_array);
 	TRACE_DEBUG("CreateRequestGetPosition request_json:\n%s\n", json_object_to_json_string(request_json));
-	
+    
 	return std::string( json_object_to_json_string( request_json ) );
 }
 
 /**
- *  @brief navicore_getallroutesのリクエスト生成
- *  @return json文字列
+ *  @brief Generate request for navicore_getallroutes
+ *  @return json strin
  */
 std::string JsonRequestGenerator::CreateRequestGetAllRoutes()
 {
-	// リクエストは空でOK
+	// Request is empty and OK
 	struct json_object* request_json = json_object_new_object();
 	TRACE_DEBUG("CreateRequestGetAllRoutes request_json:\n%s\n", json_object_to_json_string(request_json));
 
@@ -42,14 +42,13 @@ std::string JsonRequestGenerator::CreateRequestGetAllRoutes()
 }
 
 /**
- *  @brief navicore_createrouteのリクエスト生成
- *  @param sessionHandle セッションハンドル情報
- *  @return json文字列
+ *  @brief Generate request for navicore_createroute
+ *  @param sessionHandle session handle
+ *  @return json string
  */
 std::string JsonRequestGenerator::CreateRequestCreateRoute(const uint32_t* sessionHandle)
 {
 	struct json_object* request_json = json_object_new_object();
-	// sessionHandle
 	json_object_object_add(request_json, "sessionHandle", json_object_new_int(*sessionHandle));
 	TRACE_DEBUG("CreateRequestCreateRoute request_json:\n%s\n", json_object_to_json_string(request_json));
 
@@ -57,9 +56,9 @@ std::string JsonRequestGenerator::CreateRequestCreateRoute(const uint32_t* sessi
 }
 
 /**
- *  @brief navicore_pausesimulationのリクエスト生成
- *  @param sessionHandle セッションハンドル情報
- *  @return json文字列
+ *  @brief Generate request for navicore_pausesimulation
+ *  @param sessionHandle session handle
+ *  @return json string
  */
 std::string JsonRequestGenerator::CreateRequestPauseSimulation(const uint32_t* sessionHandle)
 {
@@ -72,10 +71,10 @@ std::string JsonRequestGenerator::CreateRequestPauseSimulation(const uint32_t* s
 }
 
 /**
- *  @brief navicore_pausesimulationのリクエスト生成
- *  @param sessionHandle セッションハンドル情報
- *  @param active シミュレーションのアクティブ状態
- *  @return json文字列
+ *  @brief Generate request for navicore_pausesimulation
+ *  @param sessionHandle session handle
+ *  @param active Simulation state
+ *  @return json string
  */
 std::string JsonRequestGenerator::CreateRequestSetSimulationMode(const uint32_t* sessionHandle, const bool* activate)
 {
@@ -92,15 +91,15 @@ std::string JsonRequestGenerator::CreateRequestSetSimulationMode(const uint32_t*
 }
 
 /**
- *  @brief navicore_pausesimulationのリクエスト生成
- *  @param sessionHandle セッションハンドル情報
- *  @param routeHandle ルートハンドル情報
- *  @return json文字列
+ *  @brief Generate request for navicore_pausesimulation
+ *  @param sessionHandle session handle
+ *  @param routeHandle route handle
+ *  @return json string
  */
 std::string JsonRequestGenerator::CreateRequestCancelRouteCalculation(const uint32_t* sessionHandle, const uint32_t* routeHandle)
 {
 	struct json_object* request_json = json_object_new_object();
-	
+    
 	// "sessionHandle"
 	json_object_object_add(request_json, "sessionHandle", json_object_new_int(*sessionHandle));
 
@@ -112,16 +111,16 @@ std::string JsonRequestGenerator::CreateRequestCancelRouteCalculation(const uint
 }
 
 /**
- *  @brief navicore_setwaypointsのリクエスト生成
- *  @param sessionHandle セッションハンドル情報
- *  @param routeHandle ルートハンドル情報
- *  @return json文字列
+ *  @brief Generate request for navicore_setwaypoints
+ *  @param sessionHandle session handle
+ *  @param routeHandle route handle
+ *  @return json string
  */
 std::string JsonRequestGenerator::CreateRequestSetWaypoints(const uint32_t* sessionHandle, const uint32_t* routeHandle, 
-									  const bool* startFromCurrentPosition, const std::vector<naviapi::Waypoint>* waypointsList)
+		const bool* startFromCurrentPosition, const std::vector<naviapi::Waypoint>* waypointsList)
 {
 	naviapi::Waypoint destWp;
-	
+    
 	struct json_object* request_json = json_object_new_object();
 	struct json_object* json_array = json_object_new_array();
 
@@ -145,7 +144,7 @@ std::string JsonRequestGenerator::CreateRequestSetWaypoints(const uint32_t* sess
 
 		double longitude = std::get<1>(*it);
 		json_object_object_add(destpoint, "longitude", json_object_new_double(longitude));
-		
+    	
    		json_object_array_add(json_array, destpoint);
 	}
 
@@ -156,10 +155,10 @@ std::string JsonRequestGenerator::CreateRequestSetWaypoints(const uint32_t* sess
 }
 
 /**
- *  @brief navicore_calculaterouteのリクエスト生成
- *  @param sessionHandle セッションハンドル情報
- *  @param routeHandle ルートハンドル情報
- *  @return json文字列
+ *  @brief Generate request for navicore_calculateroute
+ *  @param sessionHandle session handle
+ *  @param routeHandle route handle
+ *  @return json string
  */
 std::string JsonRequestGenerator::CreateRequestCalculateroute(const uint32_t* sessionHandle, const uint32_t* routeHandle)
 {
@@ -175,14 +174,15 @@ std::string JsonRequestGenerator::CreateRequestCalculateroute(const uint32_t* se
 }
 
 /**
- *  @brief navicore_getallsessionsのリクエスト生成
- *  @return json文字列
+ *  @brief Generate request for navicore_getallsessions
+ *  @return json string
  */
 std::string JsonRequestGenerator::CreateRequestGetAllSessions()
 {
-	// リクエストは空でOK
+	// Request is empty and OK
 	struct json_object* request_json = json_object_new_object();
 	TRACE_DEBUG("CreateRequestGetAllSessions request_json:\n%s\n", json_object_to_json_string(request_json));
 
 	return std::string( json_object_to_json_string( request_json ) );
 }
+

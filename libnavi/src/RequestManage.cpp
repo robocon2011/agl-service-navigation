@@ -12,70 +12,100 @@
 #include "RequestManage.h"
 
 /**
- *  グローバル変数
- */
-std::string response_json;
-
-/**
- *  @brief コンストラクタ
+ *  @brief constructor
  */
 RequestManage::RequestManage() : listener(nullptr)
 {
-	// コールバック設定
-	this->wsj1_itf.on_hangup	= RequestManage::OnHangupStatic;
-	this->wsj1_itf.on_call	  = RequestManage::OnCallStatic;
-	this->wsj1_itf.on_event	 = RequestManage::OnEventStatic;
+	// Callback setting
+	this->wsj1_itf.on_hangup    = RequestManage::OnHangupStatic;
+	this->wsj1_itf.on_call      = RequestManage::OnCallStatic;
+	this->wsj1_itf.on_event     = RequestManage::OnEventStatic;
+
+	pthread_cond_init(&this->cond, nullptr);
+	pthread_mutex_init(&this->mutex, nullptr);
 }
 
 /**
- *  @brief デストラクタ
+ *  @brief Destructor
  */
 RequestManage::~RequestManage()
 {
 }
 
+void* RequestManage::BinderThread(void* param)
+{
+	RequestManage* instance = (RequestManage*) param;
+	sd_event *loop;
+
+	int rc = sd_event_default(&loop);
+	if (rc < 0) {
+		TRACE_ERROR("connection to default event loop failed: %s\n", strerror(-rc));
+		return nullptr;
+	}
+
+	instance->wsj1 = afb_ws_client_connect_wsj1(loop, instance->requestURL->c_str(), &instance->wsj1_itf, nullptr);
+	if (instance->wsj1 == nullptr)
+	{
+		TRACE_ERROR("connection to %s failed: %m\n", api_url);
+		return nullptr;
+	}
+
+	// Signal
+	pthread_mutex_unlock(&instance->mutex);
+	pthread_cond_signal(&instance->cond);
+
+	while (1)
+	{
+		sd_event_run(loop, 1000 * 1000); // 1sec
+	}
+
+	return nullptr;
+}
+
 /**
- *  @brief  サービスと接続する
- *  @param  接続先のURL
- *  @return 接続の成否
+ *  @brief  Connect with a service
+ *  @param  URL
+ *  @return Success or failure of connection
  */
 bool RequestManage::Connect(const char* api_url, RequestManageListener* listener)
 {
 	this->listener = listener;
+	this->requestURL = new std::string(api_url);
 
-	int rc = sd_event_default(&this->loop);
-	if (rc < 0) {
-		TRACE_ERROR("connection to default event loop failed: %s\n", strerror(-rc));
+	pthread_t thread_id;
+	pthread_create(&thread_id, nullptr, RequestManage::BinderThread, (void*)this);
+
+	// Wait until response comes
+	pthread_mutex_lock(&this->mutex);
+	pthread_cond_wait(&this->cond, &this->mutex);
+	pthread_mutex_unlock(&this->mutex);
+
+	if (this->wsj1 == nullptr)
+	{
 		return false;
 	}
 
-	this->wsj1 = afb_ws_client_connect_wsj1(loop, api_url, &this->wsj1_itf, NULL);
-	if (this->wsj1 == NULL) {
-		TRACE_ERROR("connection to %s failed: %m\n", api_url);
-		return false;
-	}
-	
 	return true;
 }
 
 /**
- *  @brief  サービスとの接続状態チェック
- *  @return 接続の状態
+ *  @brief  Connection status check with service
+ *  @return Connection status
  */
 bool RequestManage::IsConnect(){
 	return (this->wsj1 != NULL);
 }
 
 /**
- *  @brief  BinderのAPIをコールする
- *  @param  api	  API名
- *  @param  verb	 メソッド名
- *  @param  req_json Json形式のリクエスト
- *  @return 処理の成否
+ *  @brief  Call Binder's API
+ *  @param  api      api
+ *  @param  verb     method
+ *  @param  req_json Json style request
+ *  @return Success or failure of processing
  */
 bool RequestManage::CallBinderAPI(const char* api, const char* verb, const char* req_json)
 {
-	// リクエスト送信
+	// Send request
 	int rc = afb_wsj1_call_s(this->wsj1, api, verb, req_json, RequestManage::OnReplyStatic, this);
 	if (rc < 0)
 	{
@@ -83,24 +113,12 @@ bool RequestManage::CallBinderAPI(const char* api, const char* verb, const char*
 		return false;
 	}
 
-	// ライブラリ内部がsd_eventで動いてるため、
-	// runを呼び出さないとコールバックが呼ばれない
-	sd_event_run(this->loop, 10 * 1000 * 1000); // 10[sec]
-
 	return true;
 }
 
 /**
- *  @brief  レスポンス取得
- */
-std::string RequestManage::GetResponse()
-{
-	return response_json;
-}
-
-/**
- *  @brief  セッションハンドル設定
- *  @param session セッションハンドル
+ *  @brief  Set session handle
+ *  @param session Session handle
  */
 void RequestManage::SetSessionHandle( uint32_t session )
 {
@@ -108,8 +126,8 @@ void RequestManage::SetSessionHandle( uint32_t session )
 }
 
 /**
- *  @brief  セッションハンドル取得
- *  @return セッションハンドル
+ *  @brief  Get session handle
+ *  @return Session handle
  */
 uint32_t RequestManage::GetSessionHandle()
 {
@@ -117,8 +135,8 @@ uint32_t RequestManage::GetSessionHandle()
 }
 
 /**
- *  @brief  ルートハンドル設定
- *  @param session ルートハンドル
+ *  @brief  Set route handle
+ *  @param route Route handle
  */
 void RequestManage::SetRouteHandle( uint32_t route )
 {
@@ -126,8 +144,8 @@ void RequestManage::SetRouteHandle( uint32_t route )
 }
 
 /**
- *  @brief  ルートハンドル取得
- *  @return ルートハンドル
+ *  @brief  Get route handle
+ *  @return Route handle
  */
 uint32_t RequestManage::GetRouteHandle()
 {
@@ -155,7 +173,7 @@ void RequestManage::OnEventStatic(const char *event, struct afb_wsj1_msg *msg)
 
 
 /**
- *  @brief  サービスからの応答コールバック
+ *  @brief  Answer callback from service
  */
 void RequestManage::OnReplyStatic(void *closure, struct afb_wsj1_msg *msg)
 {
@@ -164,17 +182,23 @@ void RequestManage::OnReplyStatic(void *closure, struct afb_wsj1_msg *msg)
 }
 
 /**
- *  @brief  サービスのハングアップ通知
+ *  @brief  Service hang notification
  */
 void RequestManage::OnHangupStatic(void *closure, struct afb_wsj1 *wsj1)
 {
+	printf("DEBUG:%s:%d (%p,%p)\n", __func__, __LINE__, closure, wsj1);
+	fflush(stdout);
 }
 
 void RequestManage::OnCallStatic(void *closure, const char *api, const char *verb, struct afb_wsj1_msg *msg)
 {
+	printf("DEBUG:%s:%d (%p,%s,%s,%p)\n", __func__, __LINE__, closure, api, verb, msg);
+	fflush(stdout);
 }
 
 void RequestManage::OnEventStatic(void *closure, const char *event, struct afb_wsj1_msg *msg)
 {
+	printf("DEBUG:%s:%d (%p,%s,%p)\n", __func__, __LINE__, closure, event, msg);
+	fflush(stdout);
 }
 

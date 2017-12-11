@@ -15,27 +15,27 @@ extern "C" {
 }
 
 /**
- *  変数宣言
+ *  Variable declaration
  */
-GeniviRequest* geniviRequest;   // Geniviにリクエストを送る
-BinderReply* binderReply;	   // Geniviの応答結果をjson形式に変換する
-AnalyzeRequest* analyzeRequest; // BinderClientのリクエストを解析し、GeniviAPIに渡す引数を作成する
+GeniviRequest* geniviRequest;	// Send request to Genivi
+BinderReply* binderReply;	// Convert Genivi response result to json format
+AnalyzeRequest* analyzeRequest;	// Analyze BinderClient's request and create arguments to pass to GeniviAPI
 
 /**
- *  @brief navicore_getpositionリクエストコールバック
- *  @param[in] req クライアントからの要求
+ *  @brief navicore_getposition request callback
+ *  @param[in] req Request from client
  */
 void OnRequestNavicoreGetPosition(afb_req req)
 {
 	AFB_REQ_NOTICE(req, "--> Start %s()", __func__);
 	AFB_REQ_DEBUG(req, "request navicore_getposition");
 
-	// Json形式のリクエスト取得
+	// Request of Json format request
 	json_object* req_json = afb_req_json(req);
 	const char* req_json_str = json_object_to_json_string(req_json);
 	AFB_REQ_NOTICE(req, "req_json_str = %s", req_json_str);
 
-	// リクエスト解析して、Geniviに渡す引数を作成
+	// Request analysis and create arguments to pass to Genivi
 	std::vector< int32_t > Params;
 	if( !analyzeRequest->CreateParamsGetPosition( req_json_str, Params ))
 	{
@@ -43,17 +43,17 @@ void OnRequestNavicoreGetPosition(afb_req req)
 		return;
 	}
 
-	// GENEVI APIコール
+	// GENIVI API call
 	std::map< int32_t, double > posList = geniviRequest->NavicoreGetPosition( Params );
 
-	// json形式の応答に変換
+	// Convert to json style response
 	APIResponse response = binderReply->ReplyNavicoreGetPosition( posList );
 
-	// 成功時
+	// On success
 	if(response.isSuccess)
 	{
 		AFB_REQ_NOTICE(req, "res_json_str = %s", json_object_to_json_string(response.json_data));
-		// BinderClientに成功を返す
+		// Return success to BinderClient
 		afb_req_success(req, response.json_data, "navicore_getposition");
 	}
 	else
@@ -62,7 +62,7 @@ void OnRequestNavicoreGetPosition(afb_req req)
 		afb_req_fail(req, "failed", "navicore_getposition Bad Request");
 	}
 
-	// json object解放
+	// Json object release
 	json_object_put(response.json_data);
 
 	AFB_REQ_NOTICE(req, "<-- End %s()", __func__);
@@ -70,28 +70,28 @@ void OnRequestNavicoreGetPosition(afb_req req)
 
 
 /**
- *  @brief navicore_getallroutesリクエストコールバック
- *  @param[in] req クライアントからの要求
+ *  @brief navicore_getallroutes request callback
+ *  @param[in] req Request from client
  */
 void OnRequestNavicoreGetAllRoutes(afb_req req)
 {
 	AFB_REQ_NOTICE(req, "--> Start %s()", __func__);
 	AFB_REQ_DEBUG(req, "request navicore_getallroutes");
 
-	// Json形式のリクエスト情報は無し
+	// No request information in json format
 	AFB_REQ_NOTICE(req, "req_json_str = none");
 
-	// GENEVI APIコール
+	// GENEVI API call
 	std::vector< uint32_t > allRoutes = geniviRequest->NavicoreGetAllRoutes();
 
-	// json形式の応答に変換
+	// Convert to json style response
 	APIResponse response = binderReply->ReplyNavicoreGetAllRoutes( allRoutes );
 
-	// 成功時
+	// On success
 	if(response.isSuccess)
 	{
 		AFB_REQ_NOTICE(req, "res_json_str = %s", json_object_to_json_string(response.json_data));
-		// BinderClientに成功を返す
+		// Return success to BinderClient
 		afb_req_success(req, response.json_data, "navicore_getallroutes");
 	}
 	else
@@ -100,7 +100,7 @@ void OnRequestNavicoreGetAllRoutes(afb_req req)
 		afb_req_fail(req, "failed", "navicore_getallroutes Bad Request");
 	}
 
-	// json object解放
+	// json object release
 	json_object_put(response.json_data);
 
 	AFB_REQ_NOTICE(req, "<-- End %s()", __func__);
@@ -108,20 +108,20 @@ void OnRequestNavicoreGetAllRoutes(afb_req req)
 
 
 /**
- *  @brief navicore_createrouteリクエストコールバック
- *  @param[in] req クライアントからの要求
+ *  @brief navicore_createroute request callback
+ *  @param[in] req Request from client
  */
 void OnRequestNavicoreCreateRoute(afb_req req)
 {
 	AFB_REQ_NOTICE(req, "--> Start %s ", __func__);
 	AFB_REQ_DEBUG(req, "request navicore_createroute");
 
-	// Json形式のリクエスト取得
+	// Request of json format request
 	json_object* req_json = afb_req_json(req);
 	const char* req_json_str = json_object_to_json_string(req_json);
 	AFB_REQ_NOTICE(req, "req_json_str = %s", req_json_str);
 
-	// リクエスト解析して、Geniviに渡す引数を作成
+	// Request analysis and create arguments to pass to Genivi
 	uint32_t sessionHdl = 0;
 	if( !analyzeRequest->CreateParamsCreateRoute( req_json_str, sessionHdl ))
 	{
@@ -129,17 +129,17 @@ void OnRequestNavicoreCreateRoute(afb_req req)
 		return;
 	}
 
-	// GENEVI APIコール
+	// GENEVI API call
 	uint32_t routeHdl = geniviRequest->NavicoreCreateRoute( sessionHdl );
 
-	// json形式の応答に変換
+	// Convert to json style response
 	APIResponse response = binderReply->ReplyNavicoreCreateRoute( routeHdl );
 
-	// 成功時
+	// On success
 	if(response.isSuccess)
 	{
 		AFB_REQ_NOTICE(req, "res_json_str = %s", json_object_to_json_string(response.json_data));
-		// BinderClientに成功を返す
+		// Return success to BinderClient
 		afb_req_success(req, response.json_data, "navicore_createroute");
 	}
 	else
@@ -148,7 +148,7 @@ void OnRequestNavicoreCreateRoute(afb_req req)
 		afb_req_fail(req, "failed", "navicore_createroute Bad Request");
 	}
 
-	// json object解放
+	// json object release
 	json_object_put(response.json_data);
 
 	AFB_REQ_NOTICE(req, "<-- End %s()", __func__);
@@ -156,20 +156,20 @@ void OnRequestNavicoreCreateRoute(afb_req req)
 
 
 /**
- *  @brief navicore_pausesimulationリクエストコールバック
- *  @param[in] req クライアントからの要求
+ *  @brief navicore_pausesimulation request callback
+ *  @param[in] req Request from client
  */
 void OnRequestNavicorePauseSimulation(afb_req req)
 {
 	AFB_REQ_NOTICE(req, "--> Start %s()", __func__);
 	AFB_REQ_DEBUG(req, "request navicore_pausesimulation");
 
-	// Json形式のリクエスト取得
+	// Request of json format request
 	json_object* req_json = afb_req_json(req);
 	const char* req_json_str = json_object_to_json_string(req_json);
 	AFB_REQ_NOTICE(req, "req_json_str = %s", req_json_str);
 
-	// リクエスト解析して、Geniviに渡す引数を作成
+	// Request analysis and create arguments to pass to Genivi
 	uint32_t sessionHdl = 0;
 	if( !analyzeRequest->CreateParamsPauseSimulation( req_json_str, sessionHdl ))
 	{
@@ -177,13 +177,13 @@ void OnRequestNavicorePauseSimulation(afb_req req)
 		return;
 	}
 
-	// GENEVI APIコール
+	// GENEVI API call
 	geniviRequest->NavicorePauseSimulation( sessionHdl );
 
-	// 応答不要APIのためjson形式の応答に変換は不要
+	// No reply unnecessary API for conversion to json format response is unnecessary
 	AFB_REQ_NOTICE(req, "res_json_str = none");
 
-	// BinderClientに成功を返す
+	// Return success to BinderClient
 	afb_req_success(req, NULL, "navicore_pausesimulation");
 
 	AFB_REQ_NOTICE(req, "<-- End %s()", __func__);
@@ -191,20 +191,20 @@ void OnRequestNavicorePauseSimulation(afb_req req)
 
 
 /**
- *  @brief navicore_setsimulationmodeリクエストコールバック
- *  @param[in] req クライアントからの要求
+ *  @brief navicore_setsimulationmode request callback
+ *  @param[in] req Request from client
  */
 void OnRequestNavicoreSetSimulationMode(afb_req req)
 {
 	AFB_REQ_NOTICE(req, "--> Start %s()", __func__);
 	AFB_REQ_DEBUG(req, "request navicore_setsimulationmode");
 
-	// Json形式のリクエスト取得
+	// Request of json format request
 	json_object* req_json = afb_req_json(req);
 	const char* req_json_str = json_object_to_json_string(req_json);
 	AFB_REQ_NOTICE(req, "req_json_str = %s", req_json_str);
 
-	// リクエスト解析して、Geniviに渡す引数を作成
+	// Request analysis and create arguments to pass to Genivi
 	uint32_t sessionHdl = 0;
 	bool simuMode = false;
 	if( !analyzeRequest->CreateParamsSetSimulationMode( req_json_str, sessionHdl, simuMode ))
@@ -213,13 +213,13 @@ void OnRequestNavicoreSetSimulationMode(afb_req req)
 		return;
 	}
 
-	// GENEVI APIコール
+	// GENEVI API call
 	geniviRequest->NavicoreSetSimulationMode( sessionHdl, simuMode );
 
-	// 応答不要APIのためjson形式の応答に変換は不要
+	// No reply unnecessary API for conversion to json format response is unnecessary
 	AFB_REQ_NOTICE(req, "res_json_str = none");
 
-	// BinderClientに成功を返す
+	// Return success to BinderClient
 	afb_req_success(req, NULL, "navicore_setsimulationmode");
 
 	AFB_REQ_NOTICE(req, "<-- End %s()", __func__);
@@ -227,20 +227,20 @@ void OnRequestNavicoreSetSimulationMode(afb_req req)
 
 
 /**
- *  @brief navicore_cancelroutecalculationリクエストコールバック
- *  @param[in] req クライアントからの要求
+ *  @brief navicore_cancelroutecalculation request callback
+ *  @param[in] req Request from client
  */
 void OnRequestNavicoreCancelRouteCalculation(afb_req req)
 {
 	AFB_REQ_NOTICE(req, "--> Start %s()", __func__);
 	AFB_REQ_DEBUG(req, "request navicore_cancelroutecalculation");
 
-	// Json形式のリクエスト取得
+	// Request of Json format request
 	json_object* req_json = afb_req_json(req);
 	const char* req_json_str = json_object_to_json_string(req_json);
 	AFB_REQ_NOTICE(req, "req_json_str = %s", req_json_str);
 
-	// リクエスト解析して、Geniviに渡す引数を作成
+	// Request analysis and create arguments to pass to Genivi
 	uint32_t sessionHdl = 0;
 	uint32_t routeHdl = 0;
 	if( !analyzeRequest->CreateParamsCancelRouteCalculation( req_json_str, sessionHdl, routeHdl ))
@@ -249,13 +249,13 @@ void OnRequestNavicoreCancelRouteCalculation(afb_req req)
 		return;
 	}
 
-	// GENEVI APIコール
+	// GENEVI API call
 	geniviRequest->NavicoreCancelRouteCalculation( sessionHdl, routeHdl );
 
-	// 応答不要APIのためjson形式の応答に変換は不要
+	// No reply unnecessary API for conversion to json format response is unnecessary
 	AFB_REQ_NOTICE(req, "res_json_str = none");
 
-	// BinderClientに成功を返す
+	// Return success to BinderClient
 	afb_req_success(req, NULL, "navicore_cancelroutecalculation");
 
 	AFB_REQ_NOTICE(req, "<-- End %s()", __func__);
@@ -263,20 +263,20 @@ void OnRequestNavicoreCancelRouteCalculation(afb_req req)
 
 
 /**
- *  @brief navicore_setwaypointsリクエストコールバック
- *  @param[in] req クライアントからの要求
+ *  @brief navicore_setwaypoints request callback
+ *  @param[in] req Request from client
  */
 void OnRequestNavicoreWaypoints(afb_req req)
 {
 	AFB_REQ_NOTICE(req, "--> Start %s()", __func__);
 	AFB_REQ_DEBUG(req, "request navicore_setwaypoints");
 
-	// Json形式のリクエスト取得
+	// Request of Json format request
 	json_object* req_json = afb_req_json(req);
 	const char* req_json_str = json_object_to_json_string(req_json);
 	AFB_REQ_NOTICE(req, "req_json_str = %s", req_json_str);
 
-	// リクエスト解析して、Geniviに渡す引数を作成
+	// Request analysis and create arguments to pass to Genivi
 	uint32_t sessionHdl = 0;
 	uint32_t routeHdl = 0;
 	bool currentPos = false;
@@ -287,13 +287,13 @@ void OnRequestNavicoreWaypoints(afb_req req)
 		return;
 	}
 
-	// GENEVI APIコール
+	// GENEVI API call
 	geniviRequest->NavicoreSetWaypoints( sessionHdl, routeHdl, currentPos, waypointsList );
 
-	// 応答不要APIのためjson形式の応答に変換は不要
+	// No reply unnecessary API for conversion to json format response is unnecessary
 	AFB_REQ_NOTICE(req, "res_json_str = none");
 
-	// BinderClientに成功を返す
+	// Return success to BinderClient
 	afb_req_success(req, NULL, "navicore_setwaypoints");
 
 	AFB_REQ_NOTICE(req, "<-- End %s()", __func__);
@@ -301,20 +301,20 @@ void OnRequestNavicoreWaypoints(afb_req req)
 
 
 /**
- *  @brief navicore_calculaterouteリクエストコールバック
- *  @param[in] req クライアントからの要求
+ *  @brief navicore_calculateroute request callback
+ *  @param[in] req Request from client
  */
 void OnRequestNavicoreCalculateRoute(afb_req req)
 {
 	AFB_REQ_NOTICE(req, "--> Start %s()", __func__);
 	AFB_REQ_DEBUG(req, "request navicore_calculateroute");
 
-	// Json形式のリクエスト取得
+	// Request of Json format request
 	json_object* req_json = afb_req_json(req);
 	const char* req_json_str = json_object_to_json_string(req_json);
 	AFB_REQ_NOTICE(req, "req_json_str = %s", req_json_str);
 
-	// リクエスト解析して、Geniviに渡す引数を作成
+	// Request analysis and create arguments to pass to Genivi
 	uint32_t sessionHdl = 0;
 	uint32_t routeHdl = 0;
 	if( !analyzeRequest->CreateParamsCalculateRoute( req_json_str, sessionHdl, routeHdl ))
@@ -323,13 +323,13 @@ void OnRequestNavicoreCalculateRoute(afb_req req)
 		return;
 	}
 
-	// GENEVI APIコール
+	// GENEVI API call
 	geniviRequest->NavicoreCalculateRoute( sessionHdl, routeHdl );
 
-	// 応答不要APIのためjson形式の応答に変換は不要
+	// No reply unnecessary API for conversion to json format response is unnecessary
 	AFB_REQ_NOTICE(req, "res_json_str = none");
 
-	// BinderClientに成功を返す
+	// Return success to BinderClient
 	afb_req_success(req, NULL, "navicore_calculateroute");
 
 	AFB_REQ_NOTICE(req, "<-- End %s()", __func__);
@@ -337,28 +337,28 @@ void OnRequestNavicoreCalculateRoute(afb_req req)
 
 
 /**
- *  @brief navicore_getallsessionsリクエストコールバック
- *  @param[in] req クライアントからの要求
+ *  @brief navicore_getallsessions request callback
+ *  @param[in] req Request from client
  */
 void OnRequestNavicoreGetAllSessions(afb_req req)
 {
 	AFB_REQ_NOTICE(req, "--> Start %s()", __func__);
 	AFB_REQ_DEBUG(req, "request navicore_getallsessions");
 
-	// Json形式のリクエスト情報は無し
+	// No request information in Json format
 	AFB_REQ_NOTICE(req, "req_json_str = none");
 
-	// GENEVI APIコール
+	// GENEVI API call
 	std::map<uint32_t, std::string> allSessions = geniviRequest->NavicoreGetAllSessions();
 
-	// json形式の応答に変換
+	// Convert to json style response
 	APIResponse response = binderReply->ReplyNavicoreGetAllSessions( allSessions );
 
-	// 成功時
+	// On success
 	if(response.isSuccess)
 	{
 		AFB_REQ_NOTICE(req, "res_json_str = %s", json_object_to_json_string(response.json_data));
-		// BinderClientに成功を返す
+		// Return success to BinderClient
 		afb_req_success(req, response.json_data, "navicore_getallsessions");
 	}
 	else
@@ -367,7 +367,7 @@ void OnRequestNavicoreGetAllSessions(afb_req req)
 		afb_req_fail(req, "failed", "navicore_getallsessions Bad Request");
 	}
 
-	// json object解放
+	// json object release
 	json_object_put(response.json_data);
 
 	AFB_REQ_NOTICE(req, "<-- End %s()", __func__);
@@ -375,12 +375,11 @@ void OnRequestNavicoreGetAllSessions(afb_req req)
 
 
 /**
- *  @brief サービス起動時に呼ばれるコールバック
- *		 各インスタンスを作成
+ *  @brief Callback called at service startup
  */
 int Init()
 {
-	// インスタンス作成
+	// Create instance
 	geniviRequest   = new GeniviRequest();
 	binderReply	 = new BinderReply();
 	analyzeRequest  = new AnalyzeRequest();
@@ -389,7 +388,7 @@ int Init()
 }
 
 /**
- *  @brief API定義
+ *  @brief API definition
  */
 const afb_verb_v2 verbs[] = 
 {
@@ -406,7 +405,7 @@ const afb_verb_v2 verbs[] =
 };
 
 /**
- *  @brief サービス定義
+ *  @brief Service definition
  */
 const afb_binding_v2 afbBindingV2 = 
 {

@@ -10,10 +10,10 @@
 
 
 /**
- *  @brief	  Genivi API GetPositionに渡す引数を作成する
- *  @param[in]  req_json_str BinderClientからのJSON形式のリクエスト
- *  @param[out] Params 取得するキー情報配列
- *  @return	 処理の成否
+ *  @brief	Create arguments to pass to Genivi API GetPosition.
+ *  @param[in]	req_json_str JSON request from BinderClient
+ *  @param[out]	Params An array of key information you want to obtain
+ *  @return	Success or failure of processing
  */
 bool AnalyzeRequest::CreateParamsGetPosition( const char* req_json_str, std::vector< int32_t >& Params)
 {
@@ -27,12 +27,12 @@ bool AnalyzeRequest::CreateParamsGetPosition( const char* req_json_str, std::vec
 			{
 				struct json_object* j_elem = json_object_array_get_idx(jValuesToReturn, i);
 
-				// JSON種別取得
+				// JSON type acquisition
 				if( json_object_is_type(j_elem, json_type_int ) )
 				{
 					int32_t req_key = json_object_get_int (j_elem);
 
-					// NAVICORE_TIMESTAMPとNAVICORE_SPEEDは未サポート
+					// no supported.
 					if ((NAVICORE_TIMESTAMP == req_key) || (NAVICORE_SPEED == req_key))
 					{
 						continue;
@@ -63,37 +63,37 @@ bool AnalyzeRequest::CreateParamsGetPosition( const char* req_json_str, std::vec
 
 
 /**
- *  @brief	  Genivi API CreateRouteに渡す引数を作成する
- *  @param[in]  req_json_str BinderClientからのJSON形式のリクエスト
- *  @param[out] sessionHdl セッションハンドル
- *  @return	 処理の成否
+ *  @brief	Create arguments to pass to Genivi API CreateRoute
+ *  @param[in]	req_json_str JSON request from BinderClient
+ *  @param[out]	sessionHdl Session handle
+ *  @return	Success or failure of processing
  */
 bool AnalyzeRequest::CreateParamsCreateRoute( const char* req_json_str, uint32_t& sessionHdl )
 {
-	// sessionHandleの情報取得
+	// Get sessionHandle information
 	return JsonObjectGetSessionHdl(req_json_str, sessionHdl);
 }
 
 
 /**
- *  @brief	  Genivi API PauseSimulationに渡す引数を作成する
- *  @param[in]  req_json_str BinderClientからのJSON形式のリクエスト
- *  @param[out] sessionHdl セッションハンドル
- *  @return	 処理の成否
+ *  @brief	Create arguments to pass to Genivi API PauseSimulation
+ *  @param[in]	req_json_str JSON request from BinderClient
+ *  @param[out]	sessionHdl Session handle
+ *  @return	Success or failure of processing
  */
 bool AnalyzeRequest::CreateParamsPauseSimulation( const char* req_json_str, uint32_t& sessionHdl )
 {
-	// sessionHandleの情報取得
+	// Get sessionHandle information
 	return JsonObjectGetSessionHdl(req_json_str, sessionHdl);
 }
 
 
 /**
- *  @brief	  Genivi API CreateRouteに渡す引数を作成する
- *  @param[in]  req_json_str BinderClientからのJSON形式のリクエスト
- *  @param[out] sessionHdl セッションハンドル
- *  @param[out] simuMode シミュレーションモード
- *  @return	 処理の成否
+ *  @brief	Create arguments to pass to Genivi API CreateRoute
+ *  @param[in]	req_json_str JSON request from BinderClient
+ *  @param[out]	sessionHdl Session handle
+ *  @param[out]	simuMode Simulation mode
+ *  @return	Success or failure of processing
  */
 bool AnalyzeRequest::CreateParamsSetSimulationMode( const char* req_json_str, uint32_t& sessionHdl, bool& simuMode )
 {
@@ -127,27 +127,27 @@ bool AnalyzeRequest::CreateParamsSetSimulationMode( const char* req_json_str, ui
 
 
 /**
- *  @brief	  Genivi API CancelRouteCalculationに渡す引数を作成する
- *  @param[in]  req_json_str BinderClientからのJSON形式のリクエスト
- *  @param[out] sessionHdl セッションハンドル
- *  @param[out] routeHdl ルートハンドル
- *  @return	 処理の成否
+ *  @brief	Create arguments to pass to Genivi API CancelRouteCalculation
+ *  @param[in]	req_json_str JSON request from BinderClient
+ *  @param[out]	sessionHdl Session handle
+ *  @param[out]	routeHdl Route handle
+ *  @return	Success or failure of processing
  */
 bool AnalyzeRequest::CreateParamsCancelRouteCalculation( const char* req_json_str, uint32_t& sessionHdl, uint32_t& routeHdl )
 {
-	// sessionHandle, RouteHandleの情報取得
+	// Get sessionHandle, RouteHandle
 	return JsonObjectGetSessionHdlRouteHdl(req_json_str, sessionHdl, routeHdl);
 }
 
 
 /**
- *  @brief	  Genivi API SetWaypointsに渡す引数を作成する
- *  @param[in]  req_json_str BinderClientからのJSON形式のリクエスト
- *  @param[out] sessionHdl セッションハンドル
- *  @param[out] routeHdl ルートハンドル
- *  @param[out] currentPos 自車位置からルートを引くか否か
- *  @param[out] waypointsList 目的地座標
- *  @return	 処理の成否
+ *  @brief	Create arguments to pass to Genivi API SetWaypoints
+ *  @param[in]	req_json_str JSON request from BinderClient
+ *  @param[out]	sessionHdl Session handle
+ *  @param[out]	routeHdl Route handle
+ *  @param[out]	currentPos Whether or not to draw a route from the position of the vehicle
+ *  @param[out]	waypointsList Destination coordinates
+ *  @return	Success or failure of processing
  */
 bool AnalyzeRequest::CreateParamsSetWaypoints( const char* req_json_str, uint32_t& sessionHdl, uint32_t& routeHdl,
 											   bool& currentPos, std::vector<Waypoint>& waypointsList )
@@ -173,7 +173,7 @@ bool AnalyzeRequest::CreateParamsSetWaypoints( const char* req_json_str, uint32_
 			routeHdl = json_object_get_int(rou);
 			currentPos = json_object_get_boolean(current);
 
-			// 緯度・経度情報を取得
+			// Get latitude, longitude
 			for (int i = 0; i < json_object_array_length(wpl); ++i)
 			{
 				struct json_object *array = json_object_array_get_idx(wpl, i);
@@ -183,7 +183,6 @@ bool AnalyzeRequest::CreateParamsSetWaypoints( const char* req_json_str, uint32_
 				if (json_object_object_get_ex(array, "latitude", &lati) && 
 					json_object_object_get_ex(array, "longitude", &longi)) {
 
-					// 緯度・経度情報をリストに設定
 					double latitude  = json_object_get_double(lati);
 					double longitude = json_object_get_double(longi);
 					Waypoint destWp(latitude, longitude);
@@ -211,24 +210,24 @@ bool AnalyzeRequest::CreateParamsSetWaypoints( const char* req_json_str, uint32_
 
 
 /**
- *  @brief	  Genivi API CalculateRouteに渡す引数を作成する
- *  @param[in]  req_json_str BinderClientからのJSON形式のリクエスト
- *  @param[out] sessionHdl セッションハンドル
- *  @param[out] routeHdl ルートハンドル
- *  @return	 処理の成否
+ *  @brief	Create arguments to pass to Genivi API CalculateRoute
+ *  @param[in]	req_json_str JSON request from BinderClient
+ *  @param[out]	sessionHdl Session handle
+ *  @param[out]	routeHdl Route handle
+ *  @return	Success or failure of processing
  */
 bool AnalyzeRequest::CreateParamsCalculateRoute( const char* req_json_str, uint32_t& sessionHdl, uint32_t& routeHdl )
 {
-	// sessionHandle, RouteHandleの情報取得
+	// Get sessionHandle, RouteHandle
 	return JsonObjectGetSessionHdlRouteHdl(req_json_str, sessionHdl, routeHdl);
 }
 
 
 /**
- *  @brief	  セッションハンドルとルートハンドルの情報をJSONより取得する
- *  @param[in]  req_json_str BinderClientからのJSON形式のリクエスト
- *  @param[out] セッションハンドルの値
- *  @return	 処理の成否
+ *  @brief	Get session handle and route handle information from JSON
+ *  @param[in]	req_json_str JSON request from BinderClient
+ *  @param[out]	Session handle value
+ *  @return	Success or failure of processing
  */
 
 bool AnalyzeRequest::JsonObjectGetSessionHdl( const char* req_json_str, uint32_t& sessionHdl)
@@ -259,11 +258,11 @@ bool AnalyzeRequest::JsonObjectGetSessionHdl( const char* req_json_str, uint32_t
 
 
 /**
- *  @brief	  セッションハンドルとルートハンドルの情報をJSONより取得する
- *  @param[in]  req_json_str BinderClientからのJSON形式のリクエスト
- *  @param[out] セッションハンドルの値
- *  @param[out] ルートハンドルの値
- *  @return	 処理の成否
+ *  @brief	Get session handle and route handle information from JSON
+ *  @param[in]	req_json_str JSON request from BinderClient
+ *  @param[out]	Session handle value
+ *  @param[out]	Route handle value
+ *  @return	Success or failure of processing
  */
 
 bool AnalyzeRequest::JsonObjectGetSessionHdlRouteHdl( const char* req_json_str, uint32_t& sessionHdl, uint32_t& routeHdl)

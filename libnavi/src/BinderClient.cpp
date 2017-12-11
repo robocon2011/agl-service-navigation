@@ -10,16 +10,15 @@
 #include "traces.h"
 
 /**
- *  @brief コンストラクタ
+ *  @brief constructor
  */
 BinderClient::BinderClient() : navicoreListener(nullptr)
 {
-	// インスタンス化
 	requestMng = new RequestManage();
 }
 
 /**
- *  @brief デストラクタ
+ *  @brief Destructor
  */
 BinderClient::~BinderClient()
 {
@@ -27,7 +26,7 @@ BinderClient::~BinderClient()
 }
 
 /**
- *  @brief Binderサーバーと接続する
+ *  @brief Connect with the Binder server
  */
 bool BinderClient::ConnectServer(std::string url, naviapi::NavicoreListener* listener)
 {
@@ -43,17 +42,17 @@ bool BinderClient::ConnectServer(std::string url, naviapi::NavicoreListener* lis
 }
 
 /**
- *  @brief Binder経由でGeniviのGetPositionを呼び出し、結果を取得する
+ *  @brief Call Genivi's GetPosition via Binder and get the result
  */
 void BinderClient::NavicoreGetPosition(const std::vector< int32_t >& valuesToReturn)
 {
-	// 接続中かチェック
+	// Check if it is connected
 	if( requestMng->IsConnect() )
 	{
-		// JSONリクエスト生成
+		// JSON request generation
 		std::string req_json = JsonRequestGenerator::CreateRequestGetPosition(valuesToReturn);
 
-		// リクエスト送信
+		// Send request
 		if( requestMng->CallBinderAPI(API_NAME, VERB_GETPOSITION, req_json.c_str()) )
 		{
 			TRACE_DEBUG("navicore_getposition success.\n");
@@ -66,17 +65,17 @@ void BinderClient::NavicoreGetPosition(const std::vector< int32_t >& valuesToRet
 }
 
 /**
- *  @brief ルートハンドル取得
+ *  @brief Get route handle
  */
 void BinderClient::NavicoreGetAllRoutes()
 {
-	// 接続中かチェック
+	// Check if it is connected
 	if( requestMng->IsConnect() )
 	{
-		// JSONリクエスト生成
+		// JSON request generation
 		std::string req_json = JsonRequestGenerator::CreateRequestGetAllRoutes();
 
-		// リクエスト送信
+		// Send request
 		if( requestMng->CallBinderAPI(API_NAME, VERB_GETALLROUTES, req_json.c_str()) )
 		{
 			TRACE_DEBUG("navicore_getallroutes success.\n");
@@ -89,22 +88,21 @@ void BinderClient::NavicoreGetAllRoutes()
 }
 
 /**
- *  @brief ルート作成モジュールハンドルの生成
+ *  @brief Generate route handle
  */
 void BinderClient::NavicoreCreateRoute(const uint32_t& sessionHandle)
 {
-	// 接続中かチェック
+	// Check if it is connected
 	if( requestMng->IsConnect() )
 	{
-		// JSONリクエスト生成
+		// JSON request generation
 		uint32_t session = requestMng->GetSessionHandle();
 		std::string req_json = JsonRequestGenerator::CreateRequestCreateRoute(&session);
 
-		// リクエスト送信
+		// Send request
 		if( requestMng->CallBinderAPI(API_NAME, VERB_CREATEROUTE, req_json.c_str()) )
 		{
 			TRACE_DEBUG("navicore_createroute success.\n");
-
 		}
 		else
 		{
@@ -114,18 +112,18 @@ void BinderClient::NavicoreCreateRoute(const uint32_t& sessionHandle)
 }
 
 /**
- *  @brief  デモ一時停止
+ *  @brief  Pause demo
  */
 void BinderClient::NavicorePauseSimulation(const uint32_t& sessionHandle)
 {
-	// 接続中かチェック
+	// Check if it is connected
 	if( requestMng->IsConnect() )
 	{
-		// JSONリクエスト生成
+		// JSON request generation
 		uint32_t session = requestMng->GetSessionHandle();
 		std::string req_json = JsonRequestGenerator::CreateRequestPauseSimulation(&session);
 
-		// リクエスト送信
+		// Send request
 		if( requestMng->CallBinderAPI(API_NAME, VERB_PAUSESIMULATION, req_json.c_str()) )
 		{
 			TRACE_DEBUG("navicore_pausesimulationmode success.\n");
@@ -138,18 +136,18 @@ void BinderClient::NavicorePauseSimulation(const uint32_t& sessionHandle)
 }
 
 /**
- *  @brief  デモ状態設定
+ *  @brief  Simulation mode setting
  */
 void BinderClient::NavicoreSetSimulationMode(const uint32_t& sessionHandle, const bool& activate)
 {
-	// 接続中かチェック
+	// Check if it is connected
 	if( requestMng->IsConnect() )
 	{
-		// JSONリクエスト生成
+		// JSON request generation
 		uint32_t session = requestMng->GetSessionHandle();
 		std::string req_json = JsonRequestGenerator::CreateRequestSetSimulationMode(&session, &activate);
 
-		// リクエスト送信
+		// Send request
 		if( requestMng->CallBinderAPI(API_NAME, VERB_SETSIMULATIONMODE, req_json.c_str()) )
 		{
 			TRACE_DEBUG("navicore_setsimulationmode success.\n");
@@ -162,18 +160,18 @@ void BinderClient::NavicoreSetSimulationMode(const uint32_t& sessionHandle, cons
 }
 
 /**
- *  @brief  ルート情報削除
+ *  @brief  Delete route information
  */
 void BinderClient::NavicoreCancelRouteCalculation(const uint32_t& sessionHandle, const uint32_t& routeHandle)
 {
-	// 接続中かチェック
+	// Check if it is connected
 	if( requestMng->IsConnect() )
 	{
-		// JSONリクエスト生成
+		// JSON request generation
 		uint32_t session = requestMng->GetSessionHandle();
 		std::string req_json = JsonRequestGenerator::CreateRequestCancelRouteCalculation(&session, &routeHandle);
 
-		// リクエスト送信
+		// Send request
 		if( requestMng->CallBinderAPI(API_NAME, VERB_CANCELROUTECALCULATION, req_json.c_str()) )
 		{
 			TRACE_DEBUG("navicore_cancelroutecalculation success.\n");
@@ -186,20 +184,20 @@ void BinderClient::NavicoreCancelRouteCalculation(const uint32_t& sessionHandle,
 }
 
 /**
- *  @brief 目的地設定
+ *  @brief Destination setting
  */
 void BinderClient::NavicoreSetWaypoints(const uint32_t& sessionHandle, const uint32_t& routeHandle, const bool& startFromCurrentPosition, const std::vector<naviapi::Waypoint>& waypointsList)
 {
-	// 接続中かチェック
+	// Check if it is connected
 	if( requestMng->IsConnect() )
 	{
-		// JSONリクエスト生成
+		// JSON request generation
 		uint32_t session = requestMng->GetSessionHandle();
 		uint32_t route = requestMng->GetRouteHandle();
 		std::string req_json = JsonRequestGenerator::CreateRequestSetWaypoints(&session, &route, 
-													 &startFromCurrentPosition, &waypointsList);
+					&startFromCurrentPosition, &waypointsList);
 
-		// リクエスト送信
+		// Send request
 		if( requestMng->CallBinderAPI(API_NAME, VERB_SETWAYPOINTS, req_json.c_str()) )
 		{
 			TRACE_DEBUG("navicore_setwaypoints success.\n");
@@ -212,19 +210,19 @@ void BinderClient::NavicoreSetWaypoints(const uint32_t& sessionHandle, const uin
 }
 
 /**
- *  @brief  ルート計算処理
+ *  @brief  Route calculation processing
  */
 void BinderClient::NavicoreCalculateRoute(const uint32_t& sessionHandle, const uint32_t& routeHandle)
 {
-	// 接続中かチェック
+	// Check if it is connected
 	if( requestMng->IsConnect() )
 	{
-		// JSONリクエスト生成
+		// JSON request generation
 		uint32_t session = requestMng->GetSessionHandle();
 		uint32_t route = requestMng->GetRouteHandle();
 		std::string req_json = JsonRequestGenerator::CreateRequestCalculateroute(&session, &route);
 
-		// リクエスト送信
+		// Send request
 		if( requestMng->CallBinderAPI(API_NAME, VERB_CALCULATEROUTE, req_json.c_str()) )
 		{
 			TRACE_DEBUG("navicore_calculateroute success.\n");
@@ -237,18 +235,18 @@ void BinderClient::NavicoreCalculateRoute(const uint32_t& sessionHandle, const u
 }
 
 /**
- *  @brief  各Naviのセッション情報取得
- *  @return セッション情報のマップ
+ *  @brief  Retrieve session information
+ *  @return Map of session information
  */
 void BinderClient::NavicoreGetAllSessions()
 {
-	// 接続中かチェック
+	// Check if it is connected
 	if( requestMng->IsConnect() )
 	{
-		// JSONリクエスト生成
+		// JSON request generation
 		std::string req_json = JsonRequestGenerator::CreateRequestGetAllSessions();
 
-		// リクエスト送信
+		// Send request
 		if( requestMng->CallBinderAPI(API_NAME, VERB_GETALLSESSIONS, req_json.c_str()) )
 		{
 			TRACE_DEBUG("navicore_getallsessions success.\n");
@@ -270,26 +268,33 @@ void BinderClient::OnReply(struct json_object* reply)
 
 	const char* info = json_object_get_string(infoObject);
 
-	if (strcmp(VERB_GETALLSESSIONS, info) == 0)
-	{
-		std::map<uint32_t, std::string> ret = JsonResponseAnalyzer::AnalyzeResponseGetAllSessions(reply);
+	char tmpVerb[256];
+	strcpy(tmpVerb, info);
 
-		// セッション設定
+	// Create a new JSON response
+	const char* json_str = json_object_to_json_string_ext(reply, JSON_C_TO_STRING_PRETTY);
+	std::string response_json = std::string( json_str );
+
+	if (strcmp(VERB_GETALLSESSIONS, tmpVerb) == 0)
+	{
+		std::map<uint32_t, std::string> ret = JsonResponseAnalyzer::AnalyzeResponseGetAllSessions(response_json);
+
+		// keep session handle
 		requestMng->SetSessionHandle( ret.begin()->first );
 
 		this->navicoreListener->getAllSessions_reply(ret);
 	}
-	else if (strcmp(VERB_GETPOSITION, info) == 0)
+	else if (strcmp(VERB_GETPOSITION, tmpVerb) == 0)
 	{
-		std::map< int32_t, naviapi::variant > ret = JsonResponseAnalyzer::AnalyzeResponseGetPosition(reply);
+		std::map< int32_t, naviapi::variant > ret = JsonResponseAnalyzer::AnalyzeResponseGetPosition(response_json);
 
-	this->navicoreListener->getPosition_reply(ret);
+		this->navicoreListener->getPosition_reply(ret);
 	}
-	else if (strcmp(VERB_GETALLROUTES, info) == 0)
+	else if (strcmp(VERB_GETALLROUTES, tmpVerb) == 0)
 	{
-		std::vector< uint32_t > ret = JsonResponseAnalyzer::AnalyzeResponseGetAllRoutes(reply);
+		std::vector< uint32_t > ret = JsonResponseAnalyzer::AnalyzeResponseGetAllRoutes(response_json);
 
-		// ルートハンドル保存
+		// route handle
 		if(ret.size() > 0)
 		{
 			requestMng->SetRouteHandle(ret[0]);
@@ -297,11 +302,11 @@ void BinderClient::OnReply(struct json_object* reply)
 
 		this->navicoreListener->getAllRoutes_reply(ret);
 	}
-	else if (strcmp(VERB_CREATEROUTE, info) == 0)
+	else if (strcmp(VERB_CREATEROUTE, tmpVerb) == 0)
 	{
-		uint32_t ret = JsonResponseAnalyzer::AnalyzeResponseCreateRoute(reply);
+		uint32_t ret = JsonResponseAnalyzer::AnalyzeResponseCreateRoute(response_json);
 
-		// ルートハンドル保存
+		// keep route handle
 		requestMng->SetRouteHandle(ret);
 
 		this->navicoreListener->createRoute_reply(ret);

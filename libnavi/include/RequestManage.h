@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 #include <string>
+#include <pthread.h>
 
 extern "C" {
 	#include <afb/afb-wsj1.h>
@@ -13,20 +14,28 @@ extern "C" {
 #include "RequestManageListener.h"
 
 /**
-*  @brief リクエスト用クラス
+*  @brief Class for request
 */
 class RequestManage
-{  
+{
+public:
+	pthread_cond_t cond;
+	pthread_mutex_t mutex;
+
+	struct afb_wsj1* wsj1;
+	std::string* requestURL;
+	struct afb_wsj1_itf wsj1_itf;
+
 private:
 	RequestManageListener* listener;
-	struct afb_wsj1* wsj1;
-	struct afb_wsj1_itf wsj1_itf;
-	sd_event *loop;
 	int request_cnt;
 	uint32_t sessionHandle;
 	uint32_t routeHandle;
 
-	/* コールバック関数 */
+	// Function called from thread
+	static void* BinderThread(void* param);
+
+	// Callback function
 	void OnReply(struct afb_wsj1_msg *msg);
 	void OnHangup(struct afb_wsj1 *wsj1);
 	void OnCallStatic(const char *api, const char *verb, struct afb_wsj1_msg *msg);
@@ -43,11 +52,10 @@ private:
 public:
 	RequestManage();
 	~RequestManage();
-	
+    
 	bool Connect(const char* api_url, RequestManageListener* listener);
 	bool IsConnect();
 	bool CallBinderAPI(const char *api, const char *verb, const char *object);
-	std::string GetResponse();
 	void SetSessionHandle(uint32_t session);
 	uint32_t GetSessionHandle();
 	void SetRouteHandle(uint32_t route);

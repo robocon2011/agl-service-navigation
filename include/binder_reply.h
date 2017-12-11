@@ -11,7 +11,7 @@
 #include <json-c/json.h>
 
 /**
- *  @brief Binderクライアントに返すレスポンス
+ *  @brief Response to return to Binder client.
  */
 typedef struct APIResponse_
 {
@@ -21,7 +21,7 @@ typedef struct APIResponse_
 }APIResponse;
 
 /**
- *  @brief Genevi APIで取得した情報をJSON形式に変換する。
+ *  @brief Convert information acquired by Genevi API to JSON format.
  */
 class BinderReply
 {

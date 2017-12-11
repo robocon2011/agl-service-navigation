@@ -12,23 +12,23 @@
 #include "RequestManageListener.h"
 #include "RequestManage.h"
 
-#define API_NAME				"naviapi"
+#define API_NAME		"naviapi"
 
 /**
- *  @brief API名
+ *  @brief API name
  */
-#define VERB_GETPOSITION			"navicore_getposition"
-#define VERB_GETALLROUTES		   "navicore_getallroutes"
-#define VERB_CREATEROUTE			"navicore_createroute"
-#define VERB_PAUSESIMULATION		"navicore_pausesimulation"
-#define VERB_SETSIMULATIONMODE	  "navicore_setsimulationmode"
-#define VERB_CANCELROUTECALCULATION "navicore_cancelroutecalculation"
-#define VERB_SETWAYPOINTS		   "navicore_setwaypoints"
-#define VERB_CALCULATEROUTE		 "navicore_calculateroute"
-#define VERB_GETALLSESSIONS		 "navicore_getallsessions"
+#define VERB_GETPOSITION	"navicore_getposition"
+#define VERB_GETALLROUTES	"navicore_getallroutes"
+#define VERB_CREATEROUTE	"navicore_createroute"
+#define VERB_PAUSESIMULATION	"navicore_pausesimulation"
+#define VERB_SETSIMULATIONMODE	"navicore_setsimulationmode"
+#define VERB_CANCELROUTECALCULATION	"navicore_cancelroutecalculation"
+#define VERB_SETWAYPOINTS	"navicore_setwaypoints"
+#define VERB_CALCULATEROUTE	"navicore_calculateroute"
+#define VERB_GETALLSESSIONS	"navicore_getallsessions"
 
 /**
- *  @brief Binderクライアントクラス
+ *  @brief Binder client class
  */
 class BinderClient : public RequestManageListener
 {

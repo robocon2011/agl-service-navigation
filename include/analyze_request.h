@@ -10,7 +10,7 @@
 #include "genivi_request.h"
 
 /**
- *  @brief BinderClientからのリクエストを解析して、Genivi APIに渡す引数を作成する
+ *  @brief Analyze requests from BinderClient and create arguments to pass to Genivi API.
  */
 class AnalyzeRequest
 {

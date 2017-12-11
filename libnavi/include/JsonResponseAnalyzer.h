@@ -1,8 +1,7 @@
 // Copyright 2017 AW SOFTWARE CO.,LTD
 // Copyright 2017 AISIN AW CO.,LTD
 
-#ifndef JSON_RESPONSE_ANALYZER_H_
-#define JSON_RESPONSE_ANALYZER_H_
+#pragma once
 
 #include <json-c/json.h>
 #include <stdint.h>
@@ -13,15 +12,14 @@
 #include "libnavicore.hpp"
 
 /**
-*  @brief JSONレスポンス解析クラス
+*  @brief JSON response analysis class
 */
 class JsonResponseAnalyzer
-{
+{  
 public:
-	static std::map< int32_t, naviapi::variant > AnalyzeResponseGetPosition( struct json_object * json );
-	static std::vector< uint32_t > AnalyzeResponseGetAllRoutes( struct json_object * json );
-	static uint32_t AnalyzeResponseCreateRoute( struct json_object * json );
-	static std::map<uint32_t, std::string> AnalyzeResponseGetAllSessions( struct json_object * json );
+	static std::map< int32_t, naviapi::variant > AnalyzeResponseGetPosition( std::string& res_json );
+	static std::vector< uint32_t > AnalyzeResponseGetAllRoutes( std::string& res_json );
+	static uint32_t AnalyzeResponseCreateRoute( std::string& res_json );
+	static std::map<uint32_t, std::string> AnalyzeResponseGetAllSessions( std::string& res_json );
 };
 
-#endif

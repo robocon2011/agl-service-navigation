@@ -7,15 +7,10 @@
 #include <vector>
 #include <stdint.h>
 
-
-/**
- *  @brief 型定義
- */
 typedef std::tuple<double, double> Waypoint;
 
-
 /**
- *  @brief Genivi API呼び出し
+ *  @brief Genivi API call.
  */
 class GeniviRequest
 {
